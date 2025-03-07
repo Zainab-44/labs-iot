@@ -7,9 +7,9 @@ import utime as time
 from machine import Pin
 from neopixel import NeoPixel
 
-WIFI_SSID = 'your network/hotspot ssid'
-WIFI_PASS = 'your network/hotspot password'
-BLYNK_AUTH = "your blynk device authentication"
+WIFI_SSID = 'NTU FSD'
+WIFI_PASS = ''
+BLYNK_AUTH = "r4eDrwEy17Sr2CU-GogdzWISoDOl_d8j"
 
 print("Connecting to WiFi network '{}'".format(WIFI_SSID))
 wifi = network.WLAN(network.STA_IF)
