@@ -1,72 +1,69 @@
-#Blynk rgb1 template
-#control rgb through 3 sliders
-import BlynkLib as blynklib
 import network
-import uos
-import utime as time
-from machine import Pin
-from neopixel import NeoPixel
+import time
+import BlynkLib
+from machine import Pin, PWM
 
-WIFI_SSID ='HUAWEI-D2B5'
-WIFI_PASS = 'bRN348z8'
+# WiFi Credentials
+WIFI_SSID = "HUAWEI-D2B5"
+WIFI_PASS = "bRN348z8"
+
+# Blynk Auth Token
 BLYNK_AUTH = "9tAzfCRBhROR4n6Q-jc4NIF8qi_lgkWm"
 
-print("Connecting to WiFi network '{}'".format(WIFI_SSID))
+# Connect to WiFi
 wifi = network.WLAN(network.STA_IF)
 wifi.active(True)
 wifi.connect(WIFI_SSID, WIFI_PASS)
+
 while not wifi.isconnected():
     time.sleep(1)
-    print('WiFi connect retry ...')
-print('WiFi IP:', wifi.ifconfig()[0])
+print("Connected to WiFi:", wifi.ifconfig())
 
-print("Connecting to Blynk server...")
-blynk = blynklib.Blynk(BLYNK_AUTH)
+# Initialize Blynk
+blynk = BlynkLib.Blynk(BLYNK_AUTH)
 
-# Define the pin connected to the NeoPixel
-pin = Pin(48, Pin.OUT)
-np = NeoPixel(pin, 1)
+# Define GPIO pins for RGB LED (with duty cycle initialized to 0)
+red = PWM(Pin(14), freq=1000, duty=0)  # D5
+green = PWM(Pin(12), freq=1000, duty=0)  # D6
+blue = PWM(Pin(13), freq=1000, duty=0)  # D7
 
-def set_color(r, g, b):
-    np[0] = (r, g, b)
-    np.write()
+# For Common Anode: Convert values (255 = OFF, 0 = ON)
+COMMON_ANODE = False  # Change to True if using a common anode LED
 
-# RGB Values
-r = 0
-g = 0
-b = 0
+# Function to set RGB LED brightness
+def set_rgb(r, g, b):
+    if COMMON_ANODE:
+        r, g, b = 255 - r, 255 - g, 255 - b  # Invert values for common anode LED
 
-# Blynk Handlers for Virtual Pins
-@blynk.on("V0")  # Red Slider
+    # Ensure values are within 0-255 before scaling
+    r = max(0, min(255, r))
+    g = max(0, min(255, g))
+    b = max(0, min(255, b))
+
+    # Scale to 0-1023 for ESP8266/ESP32 (Fixing your error)
+    red.duty(int(r * 4.012))  # 255 * 4.012 = 1023
+    green.duty(int(g * 4.012))
+    blue.duty(int(b * 4.012))
+
+# Blynk Virtual Pin Handlers for Switches
+@blynk.on("V0")  # Red Switch
 def v0_handler(value):
-    global r
-    if value and value[0].isdigit():  # Ensure value is valid
-        r = int(value[0])
-        set_color(r, g, b)
-
-@blynk.on("V1")  # Green Slider
+    print("Received from V0 (Red Switch):", value)
+    
+@blynk.on("V0")  # Red Switch
 def v1_handler(value):
-    global g
-    if value and value[0].isdigit():
-        g = int(value[0])
-        set_color(r, g, b)
-
-@blynk.on("V2")  # Blue Slider
+    print("Received from V1 (green Switch):", value)  # Debugging
+    if int(value[0]) == 1:
+        red.duty(1023)  # ON
+    else:
+        red.duty(0)  # OFF
+@blynk.on("V2")  # Red Switch
 def v2_handler(value):
-    global b
-    if value and value[0].isdigit():
-        b = int(value[0])
-        set_color(r, g, b)
-
-@blynk.on("connected")
-def blynk_connected():
-    print("Blynk Connected!")
-    blynk.sync_virtual(0, 1, 2)  # Sync RGB sliders from the app
-
-@blynk.on("disconnected")
-def blynk_disconnected():
-    print("Blynk Disconnected!")
-
-# Main Loop
+    print("Received from V2 (blue Switch):", value)  # Debugging
+    if int(value[0]) == 1:
+        blue.duty(1023)  # ON
+    else:
+        blue.duty(0)  # OFF
+# Main loop
 while True:
     blynk.run()
