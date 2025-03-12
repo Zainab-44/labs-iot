@@ -10,6 +10,7 @@ from machine import Pin
 SSID = "NTU FSD"
 PASSWORD = ""
 
+
 # Connect to WiFi
 station = network.WLAN(network.STA_IF)
 station.active(True)
