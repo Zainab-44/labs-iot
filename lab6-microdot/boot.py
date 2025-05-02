@@ -3,13 +3,13 @@
 import network
 import utime as time
 
-WIFI_SSID = 'NTU FSD'
-WIFI_PASS = ''
+WIFI_SSID = 'HUAWEI-D2B5'
+WIFI_PASS = 'bRN348z8'
 
 # Static IP configuration
-STATIC_IP = "10.13.40.10"  # Replace with your desired static IP/
-SUBNET_MASK = "255.255.248.0"
-GATEWAY = "10.13.40.1"  # Replace with your router's IP/hotspot
+STATIC_IP = " 192.168.18.15"  # Replace with your desired static IP/
+SUBNET_MASK = "255.255.255.0"
+GATEWAY = " 192.168.18.1"  # Replace with your router's IP/hotspot
 DNS_SERVER = "8.8.8.8"  # Google DNS
 
 
