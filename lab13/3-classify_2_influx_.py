@@ -13,7 +13,7 @@ INFLUXDB_ORG = "National Textile University"      # Replace with your InfluxDB o
 INFLUXDB_BUCKET = "lab13"  # InfluxDB bucket name
 
 # MQTT setup
-MQTT_BROKER = "192.168.186.77"  # ESP32's MQTT broker address
+MQTT_BROKER = "10.13.41.160"  # ESP32's MQTT broker address
 MQTT_PORT = 1883                # MQTT port
 MQTT_TOPIC_TEMP = "esp32/dht/temp"
 MQTT_TOPIC_HUM = "esp32/dht/hum"
